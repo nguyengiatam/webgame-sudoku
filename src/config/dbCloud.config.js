@@ -4,10 +4,11 @@ require('dotenv').config({path: `${__dirname}/../../.env`});
 main().catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb+srv://nguyengiatam:qbkzmsiv98@cluster0.j5itf.mongodb.net/webGameSudoku?retryWrites=true&w=majority', {
+  await mongoose.connect(process.env.MONGODB_URI, {
     serverSelectionTimeoutMS: 10000000,
     connectTimeoutMS: 100000
   });
+  console.log('db connected');
 }
 
 module.exports = mongoose;
