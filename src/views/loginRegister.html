@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="img/icon/favicon.png">
+    <link rel="stylesheet" type="text/css" href="layout.css">
+    <title>Sudoku</title>
+</head>
+
+<body>
+
+    <div id="cover-element" style="display: block"></div>
+
+    <dialog id="dl-login" class="dialog-input" open>
+        <div class="title-dialog">Đăng nhập</div>
+        <div class="input-info">
+            <label for="username-login">Tên tài khoản</label>
+            <input type="text" id="username-login" placeholder="Nhập tên tài khoản">
+        </div>
+        <div class="input-info">
+            <label for="password-login">Mật khẩu</label>
+            <input type="password" id="password-login" placeholder="Nhập mật khẩu">
+        </div>
+
+        <div id="msg-login" class="message"></div>
+
+        <div class="login navigation">
+            <button id="confirm-login" class="confirm">Đăng nhập</button>
+        </div>
+        <div id="get-dl-register" class="change">
+            Chưa có tài khoản?
+        </div>
+
+    </dialog>
+
+    <dialog id="dl-register" class="dialog-input">
+        <div class="title-dialog">Đăng ký</div>
+        <div class="input-info">
+            <label for="nick-name">Tên người dùng</label>
+            <input type="text" id="nick-name" placeholder="Nhập tên người dùng">
+        </div>
+        <div class="input-info">
+            <label for="username-register">Tên tài khoản</label>
+            <input type="text" id="username-register" placeholder="Nhập tên tài khoản">
+        </div>
+        <div class="input-info">
+            <label for="password-rgt">Mật khẩu</label>
+            <input type="password" id="password-register" placeholder="Nhập mật khẩu">
+        </div>
+        <div class="input-info">
+            <label for="confirm-password">Xác nhận mật khẩu</label>
+            <input type="password" id="confirm-password" placeholder="Nhập lại mật khẩu">
+        </div>
+        <div class="input-info">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="Nhập email">
+        </div>
+
+        <div id="msg-register" class="message"></div>
+
+        <div class="register navigation">
+            <button id="confirm-register" class="confirm">Đăng ký</button>
+        </div>
+        <div id="get-dl-login" class="change">
+            Đã có tài khoản?
+        </div>
+    </dialog>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="login-register.js"></script>
+</body>
+
+</html>

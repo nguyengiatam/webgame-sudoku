@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="img/icon/favicon.png">
+    <link rel="stylesheet" type="text/css" href=" layout.css">
+    <title>Danh sách phòng</title>
+</head>
+
+<body>
+    <div>
+        <div id="cover-element"></div>
+        <dialog id="dl-password-entry" class="dialog-input">
+            <div class="title-dialog">Xác nhận mật khẩu</div>
+            <div class="input-info">
+                <label for="room-pass">Mật khẩu</label>
+                <input type="password" id="password-entry" placeholder="Nhập mật khẩu phòng">
+            </div>
+
+            <div id="msg-password-entry" class="message"></div>
+
+            <div class="room-creation navigation">
+                <button id="cancel-password-entry" class="cancel">Quay lại</button>
+                <button id="confirm-password" class="confirm">Xác nhận</button>
+            </div>
+        </dialog>
+
+        <dialog id="dl-create-room" class="dialog-input">
+            <div class="title-dialog">Tạo phòng</div>
+            <div class="input-info">
+                <label for="room-name">Tên phòng</label>
+                <input type="text" id="room-name" placeholder="Nhập tên phòng">
+            </div>
+            <div class="input-info">
+                <label for="room-pass">Mật khẩu phòng</label>
+                <input type="password" id="room-pass" placeholder="Nhập mật khẩu">
+            </div>
+            <div class="input-info">
+                <div>Số người tối đa</div>
+                <select name="" id="set-max-player">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div id="msg-create-room" class="message"></div>
+
+            <div class="room-creation navigation">
+                <button id="cancel-creating-room" class="cancel">Quay lại</button>
+                <button id="confirm-creating-room" class="confirm">Tạo phòng</button>
+            </div>
+        </dialog>
+    </div>
+
+    <div id="popup-setting">
+        <div class="title-popup">Thông tin chung</div>
+        <div class="body-popup">
+            
+        </div>
+        <div class="popup-navigation">
+            <div id="close-popup" class="btn-popup">Đóng</div>
+            <div id="save-info" class="btn-popup">Lưu</div>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <div class="layout-room account-info">
+            <div class="title-layout"></div>
+            <div id="account-information">
+                <div class="my-account-item">
+                    <img src="img/icon/profile.png" alt="" id="my-avatar">
+                    <div class="my-nick-name" id="my-nick-name"></div>
+                </div>
+                <div class="selection" id="get-notification">
+                    <img src="img/icon/notification.png" alt="">
+                    <div class="text-selection">Thông báo</div>
+                </div>
+                <div class="selection" id="set-general">
+                    <img src="img/icon/general.png" alt="">
+                    <div class="text-selection">Thông tin chung</div>
+                </div>
+                <div class="selection" id="set-security">
+                    <img src="img/icon/security.png" alt="">
+                    <div class="text-selection">Thay đổi mật khẩu</div>
+                </div>
+                <div class="selection" id="btn-logout">
+                    <img src="img/icon/logout.png" alt="">
+                    <div class="text-selection">Đăng xuất</div>
+                </div>
+            </div>
+
+        </div>
+        <div class="layout-room room-list">
+            <div class="title-layout">Danh sách phòng</div>
+            <div id="room-list" class="list"></div>
+            <div class="room-list-navigation">
+                <button id="btn-create-room">Tạo phòng</button>
+            </div>
+        </div>
+        <div class="layout-room friend-list">
+            <div class="title-layout">Bạn bè</div>
+            <div id="friend-list" class="list"></div>
+        </div>
+    </div>
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="index.js"></script>
+
+</html>

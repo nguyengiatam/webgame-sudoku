@@ -1,0 +1,13 @@
+<div id="room%ROOM-ID%" class="room-item">
+    <div class="layout-title">
+        <div class="wrap-title-room"><span class="title-room-item">Tên phòng: </span><span id="room-name" class="value-title-room">%ROOM-NAME%</span></div>
+        <div class="wrap-title-room"><span class="title-room-item">Chủ phòng: </span><span id="host-name" class="value-title-room">%HOST%</span></div>
+        <div class="wrap-title-room"><span class="title-room-item">Số người/Giới hạn: </span><span id="number-player" class="value-title-room">%NUMBER-PLAYER%/%MAX-PLAYER%</span></div>
+        <div class="wrap-title-room"><span class="title-room-item">Mật khẩu: </span><img src="%IMG-LOCK%" alt="" id="lock-status"  class="status-img" data-status="%STATUS%"></div>
+        <div class="wrap-title-room"><span class="title-room-item">Trạng thái: </span><img src="%IMG-STATUS%" alt="" id="playing-status" class="status-img">
+        </div>
+    </div>
+    <div class="layout-btn-room">
+        <button onclick="checkPasswordEntry('%ROOM-ID%')" class="get-waiting-room">Vào phòng</button>
+    </div>
+</div>

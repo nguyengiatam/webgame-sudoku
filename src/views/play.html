@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="img/icon/favicon.png">
+    <link rel="stylesheet" href="layout.css">
+    <title>Sudoku</title>
+</head>
+
+<body>
+    <div id="title-play">Sudoku</div>
+    <div id="cover-element"></div>
+    <div class="result-game">
+        <img src="" alt="" class="img-result-game">
+        <div class="end-game-navigation">
+            <button id="redirect-index" class="redirect-endgame">Trang chủ</button>
+            <button id="redirect-room" class="redirect-endgame">Phòng chờ</button>
+        </div>
+    </div>
+
+    <div id="body-play">
+        <div class="leader-board-area">
+            <img src="img/icon/crown2.png" alt="" class="first-rank-player">
+            <div class="leader-board">
+            </div>
+        </div>
+        <div class="game-display">
+            <div id="game">
+                <div class='row'>
+                    <div class='col row0 vertical horizontal' data-row='0' data-col='0'></div>
+                    <div class='col row0 horizontal' data-row='0' data-col='1'></div>
+                    <div class='col row0 horizontal' data-row='0' data-col='2'></div>
+                    <div class='col row0 vertical horizontal' data-row='0' data-col='3'></div>
+                    <div class='col row0 horizontal' data-row='0' data-col='4'></div>
+                    <div class='col row0 horizontal' data-row='0' data-col='5'></div>
+                    <div class='col row0 vertical horizontal' data-row='0' data-col='6'></div>
+                    <div class='col row0 horizontal' data-row='0' data-col='7'></div>
+                    <div class='col row0 horizontal border-right' data-row='0' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row1 vertical' data-row='1' data-col='0'></div>
+                    <div class='col row1' data-row='1' data-col='1'></div>
+                    <div class='col row1' data-row='1' data-col='2'></div>
+                    <div class='col row1 vertical' data-row='1' data-col='3'></div>
+                    <div class='col row1' data-row='1' data-col='4'></div>
+                    <div class='col row1' data-row='1' data-col='5'></div>
+                    <div class='col row1 vertical' data-row='1' data-col='6'></div>
+                    <div class='col row1' data-row='1' data-col='7'></div>
+                    <div class='col row1 border-right' data-row='1' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row2 vertical' data-row='2' data-col='0'></div>
+                    <div class='col row2' data-row='2' data-col='1'></div>
+                    <div class='col row2' data-row='2' data-col='2'></div>
+                    <div class='col row2 vertical' data-row='2' data-col='3'></div>
+                    <div class='col row2' data-row='2' data-col='4'></div>
+                    <div class='col row2' data-row='2' data-col='5'></div>
+                    <div class='col row2 vertical' data-row='2' data-col='6'></div>
+                    <div class='col row2' data-row='2' data-col='7'></div>
+                    <div class='col row2 border-right' data-row='2' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row3 vertical horizontal' data-row='3' data-col='0'></div>
+                    <div class='col row3 horizontal' data-row='3' data-col='1'></div>
+                    <div class='col row3 horizontal' data-row='3' data-col='2'></div>
+                    <div class='col row3 vertical horizontal' data-row='3' data-col='3'></div>
+                    <div class='col row3 horizontal' data-row='3' data-col='4'></div>
+                    <div class='col row3 horizontal' data-row='3' data-col='5'></div>
+                    <div class='col row3 vertical horizontal' data-row='3' data-col='6'></div>
+                    <div class='col row3 horizontal' data-row='3' data-col='7'></div>
+                    <div class='col row3 horizontal border-right' data-row='3' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row4 vertical' data-row='4' data-col='0'></div>
+                    <div class='col row4' data-row='4' data-col='1'></div>
+                    <div class='col row4' data-row='4' data-col='2'></div>
+                    <div class='col row4 vertical' data-row='4' data-col='3'></div>
+                    <div class='col row4' data-row='4' data-col='4'></div>
+                    <div class='col row4' data-row='4' data-col='5'></div>
+                    <div class='col row4 vertical' data-row='4' data-col='6'></div>
+                    <div class='col row4' data-row='4' data-col='7'></div>
+                    <div class='col row4 border-right' data-row='4' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row5 vertical' data-row='5' data-col='0'></div>
+                    <div class='col row5' data-row='5' data-col='1'></div>
+                    <div class='col row5' data-row='5' data-col='2'></div>
+                    <div class='col row5 vertical' data-row='5' data-col='3'></div>
+                    <div class='col row5' data-row='5' data-col='4'></div>
+                    <div class='col row5' data-row='5' data-col='5'></div>
+                    <div class='col row5 vertical' data-row='5' data-col='6'></div>
+                    <div class='col row5' data-row='5' data-col='7'></div>
+                    <div class='col row5 border-right' data-row='5' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row6 vertical horizontal' data-row='6' data-col='0'></div>
+                    <div class='col row6 horizontal' data-row='6' data-col='1'></div>
+                    <div class='col row6 horizontal' data-row='6' data-col='2'></div>
+                    <div class='col row6 vertical horizontal' data-row='6' data-col='3'></div>
+                    <div class='col row6 horizontal' data-row='6' data-col='4'></div>
+                    <div class='col row6 horizontal' data-row='6' data-col='5'></div>
+                    <div class='col row6 vertical horizontal' data-row='6' data-col='6'></div>
+                    <div class='col row6 horizontal' data-row='6' data-col='7'></div>
+                    <div class='col row6 horizontal border-right' data-row='6' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row7 vertical' data-row='7' data-col='0'></div>
+                    <div class='col row7' data-row='7' data-col='1'></div>
+                    <div class='col row7' data-row='7' data-col='2'></div>
+                    <div class='col row7 vertical' data-row='7' data-col='3'></div>
+                    <div class='col row7' data-row='7' data-col='4'></div>
+                    <div class='col row7' data-row='7' data-col='5'></div>
+                    <div class='col row7 vertical' data-row='7' data-col='6'></div>
+                    <div class='col row7' data-row='7' data-col='7'></div>
+                    <div class='col row7 border-right' data-row='7' data-col='8'></div>
+                </div>
+                <div class='row'>
+                    <div class='col row8 vertical border-bottom' data-row='8' data-col='0'></div>
+                    <div class='col row8 border-bottom' data-row='8' data-col='1'></div>
+                    <div class='col row8 border-bottom' data-row='8' data-col='2'></div>
+                    <div class='col row8 vertical border-bottom' data-row='8' data-col='3'></div>
+                    <div class='col row8 border-bottom' data-row='8' data-col='4'></div>
+                    <div class='col row8 border-bottom' data-row='8' data-col='5'></div>
+                    <div class='col row8 vertical border-bottom' data-row='8' data-col='6'></div>
+                    <div class='col row8 border-bottom' data-row='8' data-col='7'></div>
+                    <div class='col row8 border-bottom border-right' data-row='8' data-col='8'></div>
+                </div>
+            </div>
+            <div class="input-area">
+                <span class="number-input">1</span>
+                <span class="number-input">2</span>
+                <span class="number-input">3</span>
+                <span class="number-input">4</span>
+                <span class="number-input">5</span>
+                <span class="number-input">6</span>
+                <span class="number-input">7</span>
+                <span class="number-input">8</span>
+                <span class="number-input">9</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="socket.io/socket.io.js"></script>
+<script src="playGame.js"></script>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <link rel="shortcut icon" type="image/png" href="img/icon/favicon.png">
+    <link rel="stylesheet" type="text/css" href="layout.css">
+    <title>Phòng chờ</title>
+</head>
+
+<body>
+    <div class="title-room">Phòng Chờ</div>
+    <div class="player-list">
+        <div class="player host"></div>
+        <div class="player member"></div>
+        <div class="player member"></div>
+        <div class="player member"></div>
+        <div class="player member"></div>
+    </div>
+    <div class="room-navigation">
+        <button id="leave-room">Thoát phòng</button>
+        <button id="play-game">Bắt đầu</button>
+    </div>
+
+    <div class="chat-area">
+        <div class="content-area"></div>
+        <div class="input-chat-area">
+            <input type="text" name="" id="input-chat">
+            <button id="send-chat">Gửi</button>
+        </div>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="room.js"></script>
+
+</html>
