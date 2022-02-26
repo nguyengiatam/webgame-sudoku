@@ -8,7 +8,6 @@ async function main() {
     serverSelectionTimeoutMS: 10000000,
     connectTimeoutMS: 100000
   });
-  console.log('db connected');
 }
 
 module.exports = mongoose;

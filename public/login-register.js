@@ -27,14 +27,16 @@ document.querySelector('#get-dl-register').addEventListener('click', openDialogR
 
 document.querySelector('#get-dl-login').addEventListener('click', openDialogLogin)
 
-document.querySelector('#confirm-login').addEventListener('click', async () => {
+document.querySelector('#confirm-login').addEventListener('click', async function() {
     let username = document.querySelector('#username-login').value;
     let password = document.querySelector('#password-login').value;
 
     if (username == '' || password == '') {
         return outMessage('#msg-login', 'Tài khoản hoặc mật khẩu không được để trống');
     }
+    this.disabled = true;
     const response = await callApi({ username, password }, '/account/login');
+    this.disabled = false;
     if (response.status == 200) {
         socket = io('/login');
 
@@ -63,12 +65,14 @@ async function loginSuccess() {
     window.location.replace('/index');
 }
 
-document.querySelector('#confirm-register').addEventListener('click', async () => {
+document.querySelector('#confirm-register').addEventListener('click', async function(){
     const account = inputValidation();
     if (!account) {
         return;
     }
+    this.disabled = true;
     const response = await callApi(account, '/account/register');
+    this.disabled = false;
     if (response.status == 201) {
         openDialogLogin();
     } else {
