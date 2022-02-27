@@ -5,5 +5,6 @@ module.exports = {
     chatByMe: fs.readFileSync(`${__dirname}/../template/chat-by-me.html`, 'utf-8'),
     chatByPlayer: fs.readFileSync(`${__dirname}/../template/chat-by-player.html`, 'utf-8'),
     playerPlay: fs.readFileSync(`${__dirname}/../template/player-item-play.html`, 'utf-8'),
-    generalSetting: fs.readFileSync(`${__dirname}/../template/general.html`, 'utf-8')
+    generalSetting: fs.readFileSync(`${__dirname}/../template/general.html`, 'utf-8'),
+    changePassword: fs.readFileSync(`${__dirname}/../template/change-password.html`, 'utf-8')
 }

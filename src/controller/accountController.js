@@ -31,6 +31,24 @@ const login = async (req, res, next) => {
     }
 }
 
+const changePassword = async (req, res, next) => {
+    try {
+        const account = await model.findById(req.accountId);
+        let result;
+        if (account) {
+            result = await bcrypt.compare(req.body.oldPassword, account.password);
+        }
+        if (!result) {
+            return next({status: 400, message: 'password incorrect'});
+        }
+        const password = await bcrypt.hash(req.body.newPassword, 10);
+        await model.findByIdAndUpdate(req.accountId, {password});
+        res.status(200).json();
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getAccountByToken = async token => {
     try {
         const {_id} = jwt.verify(token, '@qbkzm98!');
@@ -122,5 +140,6 @@ module.exports = {
     checkRequiredField,
     handerError, 
     getAccountByToken,
-    authentication
+    authentication,
+    changePassword
 }

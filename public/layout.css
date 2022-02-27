@@ -727,6 +727,12 @@ button:hover{
     font-size: 1.5vw;
 }
 
+.setting-message{
+    color: rgb(18, 233, 18);
+    width: 30vw;
+    margin: 1vw 9vw 1vw 9vw;
+}
+
 .title-popup{
     width: 48vw;
     height: 3vw;
@@ -736,8 +742,10 @@ button:hover{
 }
 
 .body-popup{
+    margin-top: 2vw;
     width: 48vw;
-    height: 41vw;
+    height: 40vw;
+    overflow-y: auto;
 }
 
 #avatar-setup{
@@ -805,12 +813,50 @@ button:hover{
     text-align: center;
     padding: 0.5vw 0vw 0.5vw 0vw;
     cursor: pointer;
-    border-radius: 1vw;
+    border-radius: 1.5vw;
     margin: 0vw 1vw 0vw 1vw;
-    background-color: rgb(233, 235, 236);
+    background-color: rgb(55, 175, 235);
 }
 
 .btn-popup:hover{
-    background-color: rgb(209, 211, 212);
+    background-color: rgb(17, 143, 206);
 }
 
+.btn-popup:active{
+    background-color: rgb(4, 119, 177);
+}
+
+.change-password{
+    display: flex;
+    margin: 0vw 0vw 2vw 0vw;
+}
+
+.change-password input{
+    display: block;
+    width: 20vw;
+    font-size: 1.5vw;
+    border: none;
+    border-bottom: 1px solid rgb(172, 172, 172);
+    margin-left: 2vw;
+    background-color: aliceblue;
+}
+
+.change-password input:focus{
+    outline: none;
+}
+
+.change-password label{
+    width: 15vw;
+    margin-left: 3vw;
+    font-weight: bold;
+}
+
+.btn-save{
+    width: 10vw;
+    height: 2.5vw;
+    margin: 4vw 19vw 0vw 19vw;
+    border-radius: 1.5vw;
+    border: none;
+    background-color: aquamarine;
+    font-size: 1.2vw;
+}

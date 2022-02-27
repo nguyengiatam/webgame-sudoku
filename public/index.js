@@ -58,7 +58,7 @@ document.querySelector('#set-general').addEventListener('click', getGeneral);
 
 document.querySelector('#close-popup').addEventListener('click', closePopup);
 
-document.querySelector('#save-info').addEventListener('click', saveInfo);
+document.querySelector('#set-security').addEventListener('click', setSecurity);
 
 function connectError() {
     window.location.replace('/login');
@@ -73,7 +73,6 @@ function joinRoom(data) {
 }
 
 function printMyInfo(info) {
-    console.log(info);
     document.querySelector('#my-avatar').src = info.avatar;
     document.querySelector('#my-nick-name').innerHTML = info.nickName;
     myAccount.id = info.id;
@@ -145,7 +144,7 @@ function newRoomCreate(roomItem) {
     pushRoom(roomItem);
 }
 
-function outMessage(selector, ...messageList) {
+function outMessage(selector, textColor, ...messageList) {
     const element = document.querySelector(selector);
     const ul = document.createElement('ul');
     for (const msg of messageList) {
@@ -155,6 +154,7 @@ function outMessage(selector, ...messageList) {
     }
     element.innerHTML = '';
     element.appendChild(ul);
+    element.style.color = textColor;
 }
 
 function checkPasswordEntry(id) {
@@ -195,26 +195,32 @@ async function logout() {
 }
 
 async function getGeneral() {
-    const popup = document.querySelector('#popup-setting');
-    popup.style.opacity = '1';
-    popup.style.top = '0vw';
-    popup.querySelector('.title-popup').innerHTML = this.querySelector('.text-selection').innerHTML;
+    openPopup(this);
     setTimeout(function () {
-        getTemplateSetting('/setting/general', popup.querySelector('.body-popup'), addEventBtnGeneral)
+        getTemplateSetting('/setting/general', addEventBtnGeneral);
     }, 600);
 
 }
 
+function openPopup(element){
+    const popup = document.querySelector('#popup-setting');
+    popup.querySelector('.body-popup').innerHTML = '';
+    popup.style.opacity = '1';
+    popup.style.top = '0vw';
+    popup.querySelector('.title-popup').innerHTML = element.querySelector('.text-selection').innerHTML;
+}
+
 function closePopup() {
     const popup = document.querySelector('#popup-setting');
+    popup.querySelector('.setting-message').innerHTML = '';
     popup.style.top = '-53vw';
     popup.style.opacity = '0';
 }
 
-async function getTemplateSetting(api, parentNode, callback) {
+async function getTemplateSetting(api, callback) {
     const res = await fetch(api);
     const elementSetting = await res.json();
-    parentNode.innerHTML = elementSetting;
+    document.querySelector('#popup-setting').querySelector('.body-popup').innerHTML = elementSetting;
     callback();
 }
 
@@ -233,10 +239,9 @@ async function saveInfo() {
 
     const res = await fetch('/account/update', request);
     if (res.status == 200) {
-        alert('Thay đổi thông tin thành công');
+        outMessage('#general-message', 'rgb(18, 233, 18)', 'Thay đổi thông tin thành công');
         socket.emit('get-my-info');
     }
-    closePopup()
 }
 
 function inputValidation() {
@@ -245,9 +250,9 @@ function inputValidation() {
     const nickName = document.querySelector('#account-nick-name').value;
     const email = document.querySelector('#account-email').value;
     if (!regexEmail.test(email)) {
-        return alert('Email không hợp lệ');
+        return outMessage('#general-message', 'red', 'Email không hợp lệ');
     } else if (!regexNickName.test(nickName)) {
-        return alert('Tên người dùng không hợp lệ');
+        return outMessage('#general-message', 'red', 'Tên người dùng không hợp lệ');
     }
     return {
         nickName,
@@ -256,6 +261,7 @@ function inputValidation() {
 }
 
 function addEventBtnGeneral() {
+    document.querySelector('#save-info').addEventListener('click', saveInfo);
     const btnEditList = document.querySelectorAll('.btn-edit-value');
     for (const btn of btnEditList) {
         btn.addEventListener('click', function () {
@@ -269,5 +275,60 @@ function addEventBtnGeneral() {
                 this.innerHTML = 'Chỉnh sửa';
             }
         })
+    }
+}
+
+function addEventBtnPassword(){
+    document.querySelector('#btn-change-password').addEventListener('click', changePassword);
+}
+
+function setSecurity(){
+    openPopup(this);
+    getTemplateSetting('/setting/password', addEventBtnPassword);
+}
+
+async function changePassword() {
+    const dataInput = passwordValidation();
+    if(!dataInput){
+        return;
+    }
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataInput)
+    }
+
+    const res = await fetch('/account/password', request);
+    if (res.status == 200) {
+        outMessage('#password-message', 'rgb(18, 233, 18)', 'Đổi mật khẩu thành công');
+        const inputList = document.querySelector('.body-popup').getElementsByTagName('input');
+        for (const element of inputList) {
+            element.value = '';
+        }
+    } else if(res.status == 400) {
+        outMessage('#password-message', 'red', 'Mật khẩu cũ không chính xác');
+    } else {
+        outMessage('#password-message', 'red', 'Lỗi máy chủ, hãy thử lại sau');
+    }
+}
+
+function passwordValidation() {
+    const regexPassword = /(?=.*[a-z]+)(?=.*\d+).{8,20}$/
+    const oldPassword = document.querySelector('#old-password').value;
+    const newPassword = document.querySelector('#new-password').value;
+    const reNewPassword = document.querySelector('#re-new-password').value;
+    switch (true) {
+        case !regexPassword.test(newPassword):
+            return outMessage('#password-message', 'red)', 'Mật khẩu phải bao gồm một chữ cái, một số và có từ 8 đến 20 ký tự');
+        case newPassword != reNewPassword:
+            return outMessage('#password-message', 'red', 'Mật khẩu nhập lại không chính xác');
+        case oldPassword == '':
+            return outMessage('#password-message', 'red', 'Mật khẩu cũ không được để trống');
+    }
+    return {
+        oldPassword,
+        newPassword
     }
 }

@@ -47,7 +47,7 @@ account.pre('save', function (next) {
         user.password = hash;
         next();
     })
-})
+});
 
 const accountModel = db.model('account', account);
 
