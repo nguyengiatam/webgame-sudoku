@@ -133,6 +133,7 @@ module.exports = (io, socket, accountOnline, template) => {
         }
     }
 
+    socket.join(socket.account.id);
     socket.on('get-room-list', getRoomList);
     socket.on('join-room', joinRoom);
     socket.on('create-room', createRoom);

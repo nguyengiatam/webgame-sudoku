@@ -1,6 +1,8 @@
 const model = require('../model/accountModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const fs = require('fs/promises');
+const sharp = require('sharp');
 
 
 const register = async (req, res, next) => {
@@ -59,6 +61,19 @@ const getAccountByToken = async token => {
     }
 }
 
+const getAccount = async (req, res, next) => {
+    try {
+        const account = await model.findById(req.accountId);
+        if (account) {
+            req.account = account;
+            return next();
+        }
+        next({ status: 404, message: 'Account does not exist' });
+    } catch (error) {
+        next(error);
+    }
+}
+
 const checkUserExists = async (req, res, next) => {
     try {
         const user = await model.findOne({ username: req.body.username });
@@ -75,9 +90,44 @@ const checkUserExists = async (req, res, next) => {
 const updateInfo = async (req, res, next) => {
     try {
         const result = await model.findByIdAndUpdate(req.accountId, req.dataUpdate);
-        res.status(200).json(result);
+        if (result) {
+            res.status(200).json();
+        }
     } catch (error) {
         next(error)
+    }
+}
+
+const getAvatarList = async (req, res, next) => {
+    res.status(200).json(req.account.avatarList);
+}
+
+const changeAvatar = async (req, res, next) => {
+    try {
+        const pathSplit = req.body.newAvatar.split('/');
+        pathSplit.splice(0, 3);
+        const avatar = pathSplit.join('/');
+        await model.findByIdAndUpdate(req.accountId, {avatar});
+        res.status(200).json(avatar);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const uploadAvatar = async (req, res, next) => {
+    try {
+        try {
+            await fs.access(`${__dirname}/../../public/img/avatar/${req.accountId}`);
+        } catch (error) {
+            await fs.mkdir(`${__dirname}/../../public/img/avatar/${req.accountId}`);
+        }
+        const buffData = Buffer.from(req.body.data, 'binary');
+        const fileName = `${Date.now()}.webp`;
+        await sharp(buffData).resize(150, 150).webp().toFile(`${__dirname}/../../public/img/avatar/${req.accountId}/${fileName}`);
+        await model.findByIdAndUpdate(req.accountId, {$push: {avatarList: [`img/avatar/${req.accountId}/${fileName}`]}});
+        res.status(201).json(`img/avatar/${req.accountId}/${fileName}`);
+    } catch (error) {
+        next(error);
     }
 }
 
@@ -141,5 +191,9 @@ module.exports = {
     handerError, 
     getAccountByToken,
     authentication,
-    changePassword
+    changePassword,
+    getAvatarList, 
+    getAccount,
+    changeAvatar,
+    uploadAvatar
 }

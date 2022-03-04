@@ -2,6 +2,8 @@ const socket = io('/room-list');
 const roomListElement = document.querySelector('#room-list');
 const myAccount = {};
 
+let avatarFocus;
+
 socket.on('server-return-room-list', (data) => {
     for (const room of data) {
         pushRoom(room);
@@ -48,6 +50,8 @@ document.querySelector('#cover-element').addEventListener('click', closeDialogCr
 
 document.querySelector('#cover-element').addEventListener('click', closeDialogPasswordEntry);
 
+document.querySelector('#cover-element').addEventListener('click', closeSelectAvatar);
+
 document.querySelector('#confirm-creating-room').addEventListener('click', createRoom);
 
 document.querySelector('#confirm-password').addEventListener('click', checkPassword);
@@ -60,7 +64,16 @@ document.querySelector('#close-popup').addEventListener('click', closePopup);
 
 document.querySelector('#set-security').addEventListener('click', setSecurity);
 
-function connectError() {
+document.querySelector('#apply-avatar').addEventListener('click', setNewAvatar);
+
+document.querySelector('#apply-upload').addEventListener('click', uploadAvatar);
+
+document.querySelector('#input-file').addEventListener('change', showFileName);
+
+document.querySelector('#cancel-avatar').addEventListener('click', closeSelectAvatar);
+
+function connectError(error) {
+    alert(error.message);
     window.location.replace('/login');
 }
 
@@ -110,7 +123,6 @@ function closeDialogCreateRoom() {
 }
 
 function showDialogPasswordEntry(roomId) {
-    console.log(document.querySelector('#confirm-password').dataset);
     document.querySelector('#confirm-password').dataset.id = roomId;
     document.querySelector('#dl-password-entry').open = true;
     document.querySelector('#cover-element').style.display = 'block';
@@ -118,7 +130,6 @@ function showDialogPasswordEntry(roomId) {
 
 function closeDialogPasswordEntry() {
     document.querySelector('#confirm-password').removeAttribute('data-id');
-    console.log(document.querySelector('#confirm-password').dataset);
     document.querySelector('#dl-password-entry').open = false;
     document.querySelector('#cover-element').style.display = 'none';
 }
@@ -202,7 +213,7 @@ async function getGeneral() {
 
 }
 
-function openPopup(element){
+function openPopup(element) {
     const popup = document.querySelector('#popup-setting');
     popup.querySelector('.body-popup').innerHTML = '';
     popup.style.opacity = '1';
@@ -262,6 +273,7 @@ function inputValidation() {
 
 function addEventBtnGeneral() {
     document.querySelector('#save-info').addEventListener('click', saveInfo);
+    document.querySelector('#avatar-setup').addEventListener('click', avatarSetup);
     const btnEditList = document.querySelectorAll('.btn-edit-value');
     for (const btn of btnEditList) {
         btn.addEventListener('click', function () {
@@ -278,18 +290,18 @@ function addEventBtnGeneral() {
     }
 }
 
-function addEventBtnPassword(){
+function addEventBtnPassword() {
     document.querySelector('#btn-change-password').addEventListener('click', changePassword);
 }
 
-function setSecurity(){
+function setSecurity() {
     openPopup(this);
     getTemplateSetting('/setting/password', addEventBtnPassword);
 }
 
 async function changePassword() {
     const dataInput = passwordValidation();
-    if(!dataInput){
+    if (!dataInput) {
         return;
     }
     const request = {
@@ -307,7 +319,7 @@ async function changePassword() {
         for (const element of inputList) {
             element.value = '';
         }
-    } else if(res.status == 400) {
+    } else if (res.status == 400) {
         outMessage('#password-message', 'red', 'Mật khẩu cũ không chính xác');
     } else {
         outMessage('#password-message', 'red', 'Lỗi máy chủ, hãy thử lại sau');
@@ -331,4 +343,108 @@ function passwordValidation() {
         oldPassword,
         newPassword
     }
+}
+
+function closeSelectAvatar() {
+    document.querySelector("#select-avatar").style.display = "none";
+    document.querySelector('#cover-element').style.display = 'none';
+    document.querySelector('.avatar-list').innerHTML = '';
+    document.querySelector('#label-input-file').innerHTML = 'Chọn ảnh . . .';
+}
+
+async function avatarSetup() {
+    document.querySelector("#select-avatar").style.display = "block";
+    document.querySelector('#cover-element').style.display = 'block';
+    const res = await fetch('/account/avatarList');
+    if (res.status != 200) {
+        return
+    }
+    showAvatarList(await res.json());
+}
+
+function showAvatarList(avatarList) {
+    for (const avatar of avatarList) {
+        pushAvatar(avatar)
+    }
+}
+
+function pushAvatar(avatarPath) {
+    const parent = document.querySelector('.avatar-list');
+    const imgTag = document.createElement('img');
+    imgTag.src = avatarPath;
+    imgTag.addEventListener('click', function () {
+        if (avatarFocus) {
+            avatarFocus.style.boxShadow = '';
+        }
+        this.style.boxShadow = 'aqua 0px 0px 7px 7px';
+        avatarFocus = this;
+    })
+    parent.appendChild(imgTag);
+}
+
+async function setNewAvatar() {
+    closeSelectAvatar();
+    if (!avatarFocus) {
+        return;
+    }
+    const request = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newAvatar: avatarFocus.src })
+    };
+    const res = await fetch('/account/changeAvatar', request);
+    if (res.status == 200) {
+        const newAvatar = await res.json();
+        document.querySelector('#my-avatar').src = newAvatar;
+        document.querySelector('#avatar-setup').src = newAvatar;
+    }
+}
+
+async function uploadAvatar() {
+    this.disabled = true;
+    const fileAvatar = document.querySelector('#input-file').files[0];
+    if (!fileAvatar) {
+        return showToast('Avatar chưa được chọn');
+    }
+    try {
+        const data = await readFile(fileAvatar);
+        const request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ data })
+        }
+        const res = await fetch('account/uploadAvatar', request);
+        this.disabled = false;
+        document.querySelector('#label-input-file').innerHTML = 'Chọn ảnh . . .';
+        res.status == 201 ? showToast('Ảnh đại diện tải lên thành công') : showToast('Ảnh đại diện tải lên thất bại');
+        pushAvatar(await res.json());
+    } catch (error) {
+        showToast(error.message);
+    }
+}
+
+function readFile(file) {
+    return new Promise((resolve, reject) => {
+        let fr = new FileReader();
+        fr.addEventListener('load', (event) => {
+            resolve(event.target.result);
+        });
+
+        fr.addEventListener('error', (event) => {
+            reject(new Error('Lỗi đọc tệp ảnh'));
+        });
+        fr.readAsBinaryString(file);
+    });
+}
+
+function showFileName(){
+    document.querySelector('#label-input-file').innerHTML = this.files[0].name;
+}
+
+function showToast(mess) {
+    alert(mess);
 }

@@ -13,7 +13,7 @@ const server = require("http").Server(app);
 const socket = require('./socket.io/socket.io');
 socket.attach(server);
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static('./public'));
 

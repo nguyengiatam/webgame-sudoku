@@ -20,6 +20,10 @@ const account = new Schema({
         type: String,
         default: `img/avatar/1.png`
     },
+    avatarList: {
+        type: Array,
+        default: ['img/avatar/1.png','img/avatar/2.png','img/avatar/3.png','img/avatar/4.png','img/avatar/5.png','img/avatar/6.png','img/avatar/7.png','img/avatar/8.png','img/avatar/9.png','img/avatar/10.png','img/avatar/11.png','img/avatar/12.png']
+    },
     rank: {
         type: String,
         default: 'Đồng'

@@ -110,12 +110,12 @@ module.exports = (io, socket, indexIo, accountOnline, template, gameDataList) =>
     }
 
     const playerDisconnect = async () => {
+        const index = accountOnline.findIndex(id => id == socket.account.id);
+        accountOnline.splice(index, 1);
         const room = await roomModel.findById(roomId);
         if (!room.playing) {
             await leaveRoom();
         }
-        const index = accountOnline.findIndex(id => id == socket.account.id);
-        accountOnline.splice(index, 1);
     }
 
     const playerReady = async () => {
