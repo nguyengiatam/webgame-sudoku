@@ -2,7 +2,7 @@ const cookie = require('cookie');
 const accountModel = require('../model/accountModel');
 const jwt = require('jsonwebtoken');
 
-module.exports = (socket) => {
+module.exports = (socket, accountOnline) => {
     socket.on('login', login);
 
     async function login(){
@@ -13,9 +13,8 @@ module.exports = (socket) => {
             if (!_id) {
                 return socket.emit('token invalid');
             }
-            const account = await accountModel.findById(_id);
-            console.log(account.online);
-            if (account.online) {
+            const index = accountOnline.find(id => id == _id);
+            if (index) {
                 return socket.emit('account-online');
             }
             socket.emit('login-success');

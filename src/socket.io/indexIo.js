@@ -2,7 +2,7 @@ const roomModel = require('../model/roomModel');
 const accountModel = require('../model/accountModel')
 const icon = require('./iconPath');
 
-module.exports = (io, socket, template) => {
+module.exports = (io, socket, template, accountOnline) => {
 
     const roomItemAdapter = room => {
         let roomItem = template.roomItem;
@@ -118,7 +118,8 @@ module.exports = (io, socket, template) => {
     }
 
     const playerDisconnect = async () => {
-        await accountModel.findByIdAndUpdate(socket.account.id, {online: false});
+        const index = accountOnline.findIndex(id => id == socket.account.id);
+        accountOnline.splice(index, 1);
     }
 
     const checkPassword = async data => {

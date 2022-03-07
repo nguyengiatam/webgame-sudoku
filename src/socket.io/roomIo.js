@@ -2,7 +2,7 @@ const roomModel = require('../model/roomModel');
 const accountModel = require('../model/accountModel');
 const icon = require('./iconPath');
 
-module.exports = (io, socket, indexIo, template, gameDataList) => {
+module.exports = (io, socket, indexIo, template, gameDataList, accountOnline) => {
     const roomId = socket.handshake.query.id;
 
     const logError = error => {
@@ -96,6 +96,7 @@ module.exports = (io, socket, indexIo, template, gameDataList) => {
             } else {
                 deleteRoom(room.id);
             }
+            console.log('leave success');
         } catch (error) {
             console.log(error);
         }
@@ -111,7 +112,8 @@ module.exports = (io, socket, indexIo, template, gameDataList) => {
 
     const playerDisconnect = async () => {
         try {
-            await accountModel.findByIdAndUpdate(socket.account.id, { online: false });
+            const index = accountOnline.findIndex(id => id == socket.account.id);
+            accountOnline.splice(index, 1);
             const room = await roomModel.findById(roomId);
             if (!room.playing) {
                 await leaveRoom();
@@ -168,7 +170,7 @@ module.exports = (io, socket, indexIo, template, gameDataList) => {
     socket.join(roomId);
     socket.on('get-all-item', getAllPlayerItem);
 
-    socket.on('disconnect', playerDisconnect)
+    socket.on('disconnecting', playerDisconnect)
 
     socket.on('new-chat-content', newChatContent)
 

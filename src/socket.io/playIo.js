@@ -2,7 +2,7 @@ const roomModel = require('../model/roomModel');
 const accountModel = require('../model/accountModel');
 const icon = require('./iconPath')
 
-module.exports = (io, socket, indexIo, roomIo) => {
+module.exports = (io, socket, indexIo, roomIo, accountOnline) => {
     const roomId = socket.handshake.query.id;
     let redirectRoom = false;
     socket.join(roomId);
@@ -11,7 +11,7 @@ module.exports = (io, socket, indexIo, roomIo) => {
     socket.on('new-value-correct', newValueCorrect);
     socket.on('new-value-incorrect', newValueIncorrect);
     socket.on('request-room-redirect', requestRoomRedirect)
-    socket.on('disconnect', playerDisconnect);
+    socket.on('disconnecting', playerDisconnect);
 
     async function getData() {
         try {
@@ -122,7 +122,8 @@ module.exports = (io, socket, indexIo, roomIo) => {
 
     async function playerDisconnect() {
         try {
-            await accountModel.findByIdAndUpdate(socket.account.id, {online: false});
+            const index = accountOnline.findIndex(id => id == socket.account.id);
+            accountOnline.splice(index, 1);
             const room = await roomModel.findById(roomId).populate('host').populate('member');
             if (!redirectRoom) {
                 playerNotRedirectRoom(room);
@@ -132,6 +133,7 @@ module.exports = (io, socket, indexIo, roomIo) => {
                 socket.to(roomId).emit('player-lose', socket.account.id);
             }
             roomModel.findByIdAndUpdate(roomId, room, logError);
+            
         } catch (error) {
             console.log(error);
         }
