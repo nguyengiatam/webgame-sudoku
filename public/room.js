@@ -10,8 +10,10 @@ socket.on('player-cancel-ready', playerCancelReady);
 socket.on("connect_error", connectError);
 socket.on("all-players-not-ready", allPlayersNotReady);
 socket.on("start-game", startGame);
+socket.on('friend-item-list', showFriendList)
 
 socket.emit('get-all-item');
+socket.emit('get-friend-list');
 
 
 document.querySelector('#send-chat').addEventListener('click', sendChat)
@@ -155,4 +157,9 @@ function playerCancelReady(playerId) {
             element.querySelector('.img-ready').style.display = 'none';
         }
     }
+}
+
+function showFriendList(friendList){
+    const parent = document.querySelector('#friend-list');
+    parent.innerHTML = friendList.join('');
 }

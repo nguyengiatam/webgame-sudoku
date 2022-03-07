@@ -2,9 +2,9 @@ const roomModel = require('../model/roomModel');
 const accountModel = require('../model/accountModel')
 const icon = require('./iconPath');
 
-module.exports = (io, socket, accountOnline, template) => {
+module.exports = (io, socket, template) => {
 
-    const fillInTheTemplate = room => {
+    const roomItemAdapter = room => {
         let roomItem = template.roomItem;
         roomItem = roomItem.replace(/%ROOM-ID%/g, room._id);
         roomItem = roomItem.replace(/%ROOM-NAME%/, room.name);
@@ -21,6 +21,23 @@ module.exports = (io, socket, accountOnline, template) => {
         return roomItem;
     }
 
+    const friendsItemAdapter = friendList => {
+        let friendItemList = []
+        for (const friend of friendList) {
+            let friendItem = template.friendItem;
+            friendItem = friendItem.replace(/%ID%/, friend.id);
+            friendItem = friendItem.replace(/%AVATAR%/, friend.avatar);
+            friendItem = friendItem.replace(/%NICKNAME%/, friend.nickName);
+            if(friend.online){
+                friendItem = friendItem.replace(/%STATUS%/, 'online');
+            } else {
+                friendItem = friendItem.replace(/%STATUS%/, 'offline');
+            }
+            friendItemList.push(friendItem);
+        }
+        return friendItemList;
+    }
+
     const findRoom = async roomId => {
         try {
             const room = await roomModel.findById(roomId).populate('host');
@@ -35,7 +52,7 @@ module.exports = (io, socket, accountOnline, template) => {
         try {
             const roomDataList = await roomModel.find({}).populate('host');
             for (const room of roomDataList) {
-                let roomItem = fillInTheTemplate(room)
+                let roomItem = roomItemAdapter(room)
                 roomElementList.push(roomItem);
             }
             socket.emit('server-return-room-list', roomElementList);
@@ -87,7 +104,7 @@ module.exports = (io, socket, accountOnline, template) => {
         try {
             const room = await roomModel.create(roomData);
             const roomFull = await findRoom(room.id);
-            const roomItem = fillInTheTemplate(roomFull);
+            const roomItem = roomItemAdapter(roomFull);
             socket.emit('create-room-success', room.id);
             io.emit('new-room-create', roomItem)
         } catch (error) {
@@ -95,9 +112,13 @@ module.exports = (io, socket, accountOnline, template) => {
         }
     }
 
-    const playerDisconnect = () => {
-        const index = accountOnline.findIndex(id => id == socket.account.id);
-        accountOnline.splice(index, 1);
+    const getFriendList = async () => {
+        const friendsItemList = friendsItemAdapter(socket.account.friends);
+        socket.emit('friend-item-list', friendsItemList);
+    }
+
+    const playerDisconnect = async () => {
+        await accountModel.findByIdAndUpdate(socket.account.id, {online: false});
     }
 
     const checkPassword = async data => {
@@ -134,6 +155,7 @@ module.exports = (io, socket, accountOnline, template) => {
     }
 
     socket.join(socket.account.id);
+    socket.on('get-friend-list', getFriendList)
     socket.on('get-room-list', getRoomList);
     socket.on('join-room', joinRoom);
     socket.on('create-room', createRoom);

@@ -1,8 +1,8 @@
 const { Server } = require('socket.io');
 const cookie = require('cookie');
 const { getGameData } = require('../controller/gameController');
-const fs = require('fs');
 const { getAccountByToken } = require('../controller/accountController');
+const accountModel = require('../model/accountModel')
 const roomModel = require('../model/roomModel')
 const createIndexIo = require('./indexIo');
 const createRoomIo = require('./roomIo');
@@ -24,31 +24,28 @@ getGameData().then(data => gameData = data).catch(err => console.log(err))
 let accountOnline = [];
 
 const roomListConnection = socket => {
-    createIndexIo(indexIo, socket, accountOnline, template);
+    createIndexIo(indexIo, socket, template);
 }
 
 const roomConnection = socket => {
-    createRoomIo(roomIo, socket, indexIo, accountOnline, template, gameData);
+    createRoomIo(roomIo, socket, indexIo, template, gameData);
 }
 
 const loginConnection = socket => {
-    createLoginIo(socket, accountOnline);
+    createLoginIo(socket);
 }
 
 const playConnection = socket => {
-    createPlayIo(playIo, socket, accountOnline, indexIo, roomIo);
+    createPlayIo(playIo, socket, indexIo, roomIo);
 }
 
 indexIo.use(authentication);
-indexIo.use(checkAccountOnline);
 
 roomIo.use(authentication);
 roomIo.use(authorization);
-roomIo.use(checkAccountOnline);
 
 playIo.use(authentication);
 playIo.use(authorization);
-playIo.use(checkAccountOnline);
 
 indexIo.on('connection', roomListConnection)
 roomIo.on('connection', roomConnection)
@@ -60,23 +57,22 @@ async function authentication(socket, next) {
         const cookieUser = cookie.parse(socket.handshake.headers.cookie);
         const account = await getAccountByToken(cookieUser.token);
         if (account) {
-            socket.account = account;
-            return next();
+            if (!account.online) {
+                socket.account = account;
+                accountModel.findByIdAndUpdate(account.id, { online: true }, (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+                return next();
+            }
+            return next({ message: 'account-online' });
         }
     } catch (error) {
         console.log(error);
+        next({ message: 'account-invalid' });
     }
-    next({ message: 'account-invalid' });
 };
-
-function checkAccountOnline(socket, next) {
-    const online = accountOnline.find(id => id == socket.account.id);
-    if (!online) {
-        accountOnline.push(socket.account.id);
-        return next();
-    }
-    next({ message: 'account-online' });
-}
 
 async function authorization(socket, next) {
     try {
@@ -92,13 +88,6 @@ async function authorization(socket, next) {
     } catch (error) {
         next({ message: 'not authorized' });
         console.log(error);
-    }
-}
-
-function clearAccountOnline(accountId){
-    const index = accountOnline.findIndex(id => id == accountId);
-    if(index){
-        accountOnline.splice(index, 1);
     }
 }
 

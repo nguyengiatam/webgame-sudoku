@@ -8,6 +8,8 @@ const account = new Schema({
     password: String,
     nickName: String,
     email: String,
+    notifications: Array,
+    online: Boolean,
     friends: {
         type: Array,
         ref: 'account'

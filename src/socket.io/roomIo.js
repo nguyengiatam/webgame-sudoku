@@ -2,7 +2,7 @@ const roomModel = require('../model/roomModel');
 const accountModel = require('../model/accountModel');
 const icon = require('./iconPath');
 
-module.exports = (io, socket, indexIo, accountOnline, template, gameDataList) => {
+module.exports = (io, socket, indexIo, template, gameDataList) => {
     const roomId = socket.handshake.query.id;
 
     const logError = error => {
@@ -42,7 +42,7 @@ module.exports = (io, socket, indexIo, accountOnline, template, gameDataList) =>
                 playerList.push({ item: itemMember, id: member.id, role: 'member' });
             }
             socket.emit('join-success', { playerList, playerReadyList });
-            if(room.host.id != socket.account.id){
+            if (room.host.id != socket.account.id) {
                 socket.to(roomId).emit('new-player-join', await getPlayerItem(socket.account.id, 'member', 'player-card'));
             }
         } catch (error) {
@@ -110,12 +110,16 @@ module.exports = (io, socket, indexIo, accountOnline, template, gameDataList) =>
     }
 
     const playerDisconnect = async () => {
-        const index = accountOnline.findIndex(id => id == socket.account.id);
-        accountOnline.splice(index, 1);
-        const room = await roomModel.findById(roomId);
-        if (!room.playing) {
-            await leaveRoom();
+        try {
+            await accountModel.findByIdAndUpdate(socket.account.id, { online: false });
+            const room = await roomModel.findById(roomId);
+            if (!room.playing) {
+                await leaveRoom();
+            }
+        } catch (error) {
+            console.log(error);
         }
+
     }
 
     const playerReady = async () => {

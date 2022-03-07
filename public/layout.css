@@ -910,6 +910,7 @@ button:hover{
     background-color: rgb(217, 243, 250);
     width: 15vw;
     height: 2vw;
+    overflow: hidden;
 }
 
 #select-file label{
@@ -978,4 +979,41 @@ button:hover{
 
 .avatar-focus{
     background-color: aqua;
+}
+
+.friend-item{
+    display: flex;
+    font-size: 1.6vw;
+    cursor: pointer;
+    margin: 1vw 1vw 1vw 2vw;
+    width: 90%;
+    height: 4.1vw;
+    border-radius: 1vw;
+
+}
+
+.friend-item:hover{
+    background-color: aliceblue;
+}
+
+.friend-item img{
+    width: 4vw;
+    height: 4vw;
+    border-radius: 50%;
+    background-color: rgb(213, 247, 247);
+}
+
+.name-friend{
+    padding: 1.1vw;
+}
+
+.status-online-friend{
+    position: relative;
+    border: 2px solid white;
+    background-color: greenyellow;
+    top: 2.7vw;
+    left: 4.1vw;
+    border-radius: 50%;
+    width: 1vw;
+    height: 1vw;
 }

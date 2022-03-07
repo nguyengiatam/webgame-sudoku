@@ -405,7 +405,9 @@ async function setNewAvatar() {
 async function uploadAvatar() {
     this.disabled = true;
     const fileAvatar = document.querySelector('#input-file').files[0];
+    
     if (!fileAvatar) {
+        this.disabled = false;
         return showToast('Avatar chưa được chọn');
     }
     try {

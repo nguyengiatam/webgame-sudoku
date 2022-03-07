@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const fs = require('fs/promises');
 const sharp = require('sharp');
+const S3 = require('../config/aws.config');
 
 
 const register = async (req, res, next) => {
@@ -17,16 +18,16 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-        const account = await model.findOne({username: req.body.username});
+        const account = await model.findOne({ username: req.body.username });
         let result;
         if (account) {
             result = await bcrypt.compare(req.body.password, account.password);
         }
         if (!result) {
-            return next({status: 400, message: 'Username or password incorrect'});
+            return next({ status: 400, message: 'Username or password incorrect' });
         }
         const token = jwt.sign({ _id: account._id }, '@qbkzm98!');
-        res.cookie('token', token, {httpOnly: true});
+        res.cookie('token', token, { httpOnly: true });
         res.status(200).json();
     } catch (error) {
         next(error)
@@ -41,10 +42,10 @@ const changePassword = async (req, res, next) => {
             result = await bcrypt.compare(req.body.oldPassword, account.password);
         }
         if (!result) {
-            return next({status: 400, message: 'password incorrect'});
+            return next({ status: 400, message: 'password incorrect' });
         }
         const password = await bcrypt.hash(req.body.newPassword, 10);
-        await model.findByIdAndUpdate(req.accountId, {password});
+        await model.findByIdAndUpdate(req.accountId, { password });
         res.status(200).json();
     } catch (error) {
         next(error)
@@ -53,8 +54,8 @@ const changePassword = async (req, res, next) => {
 
 const getAccountByToken = async token => {
     try {
-        const {_id} = jwt.verify(token, '@qbkzm98!');
-        const account = await model.findById(_id);
+        const { _id } = jwt.verify(token, '@qbkzm98!');
+        const account = await model.findById(_id).populate('friends');
         return account;
     } catch (error) {
         throw new Error(error);
@@ -106,8 +107,9 @@ const changeAvatar = async (req, res, next) => {
     try {
         const pathSplit = req.body.newAvatar.split('/');
         pathSplit.splice(0, 3);
-        const avatar = pathSplit.join('/');
-        await model.findByIdAndUpdate(req.accountId, {avatar});
+        let avatar = '';
+        avatar = pathSplit[0] == 'avatar' ? pathSplit.join('/') : req.body.newAvatar;
+        await model.findByIdAndUpdate(req.accountId, { avatar });
         res.status(200).json(avatar);
     } catch (error) {
         next(error);
@@ -116,16 +118,22 @@ const changeAvatar = async (req, res, next) => {
 
 const uploadAvatar = async (req, res, next) => {
     try {
-        try {
-            await fs.access(`${__dirname}/../../public/img/avatar/${req.accountId}`);
-        } catch (error) {
-            await fs.mkdir(`${__dirname}/../../public/img/avatar/${req.accountId}`);
-        }
-        const buffData = Buffer.from(req.body.data, 'binary');
+        const originBufferData = Buffer.from(req.body.data, 'binary');
         const fileName = `${Date.now()}.webp`;
-        await sharp(buffData).resize(150, 150).webp().toFile(`${__dirname}/../../public/img/avatar/${req.accountId}/${fileName}`);
-        await model.findByIdAndUpdate(req.accountId, {$push: {avatarList: [`img/avatar/${req.accountId}/${fileName}`]}});
-        res.status(201).json(`img/avatar/${req.accountId}/${fileName}`);
+        const compressedBufferData = await sharp(originBufferData).resize(200, 200).webp().toBuffer();
+        const params = {
+            Bucket: 'webgame-sudoku',
+            Key: `${req.accountId}/${fileName}`,
+            Body: compressedBufferData,
+            ContentType: 'image/webp'
+        }
+        S3.upload(params, async (s3err, data) => {
+            if (s3err) {
+                return console.log(s3err);
+            }
+            await model.findByIdAndUpdate(req.accountId, { $push: { avatarList: [data.Location] } });
+            res.status(201).json(data.Location);
+        });
     } catch (error) {
         next(error);
     }
@@ -169,7 +177,7 @@ const checkRequiredField = (req, res, next) => {
 function authentication(req, res, next) {
     try {
         const token = req.cookies.token;
-        const {_id} = jwt.verify(token , '@qbkzm98!');
+        const { _id } = jwt.verify(token, '@qbkzm98!');
         if (_id) {
             req.accountId = _id;
             return next();
@@ -188,11 +196,11 @@ module.exports = {
     deleteAccount,
     filterDataUpdate,
     checkRequiredField,
-    handerError, 
+    handerError,
     getAccountByToken,
     authentication,
     changePassword,
-    getAvatarList, 
+    getAvatarList,
     getAccount,
     changeAvatar,
     uploadAvatar
