@@ -1,3 +1,4 @@
+require('dotenv').config({path: `${__dirname}/../../.env`})
 const model = require('../model/accountModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -26,7 +27,7 @@ const login = async (req, res, next) => {
         if (!result) {
             return next({ status: 400, message: 'Username or password incorrect' });
         }
-        const token = jwt.sign({ _id: account._id }, '@qbkzm98!');
+        const token = jwt.sign({ _id: account._id }, process.env.SECRET_KEY_JWT);
         res.cookie('token', token, { httpOnly: true });
         res.status(200).json();
     } catch (error) {
@@ -54,7 +55,7 @@ const changePassword = async (req, res, next) => {
 
 const getAccountByToken = async token => {
     try {
-        const { _id } = jwt.verify(token, '@qbkzm98!');
+        const { _id } = jwt.verify(token, process.env.SECRET_KEY_JWT);
         const account = await model.findById(_id).populate('friends');
         return account;
     } catch (error) {

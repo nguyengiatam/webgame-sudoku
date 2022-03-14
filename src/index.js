@@ -49,7 +49,7 @@ app.use('/setting', authentication, settingRouter);
 function authentication(req, res, next) {
     try {
         const token = req.cookies.token;
-        const {_id} = jwt.verify(token , '@qbkzm98!');
+        const {_id} = jwt.verify(token , process.env.SECRET_KEY_JWT);
         if (_id) {
             req.accountId = _id;
             return next();
@@ -66,7 +66,7 @@ function checkLogin(req, res, next) {
         if(!token){
             return res.redirect('/login');
         }
-        const {_id} = jwt.verify(token , '@qbkzm98!');
+        const {_id} = jwt.verify(token , process.env.SECRET_KEY_JWT);
         if (_id) {
             return res.redirect('/index');
         }
